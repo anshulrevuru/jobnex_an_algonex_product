@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobNex - AI Resume Builder & Analyzer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top Navigation -->
+        <header class="navbar">
+            <div class="brand">
+                <div class="logo-icon">✨</div>
+                <h1>Job<span>Nex</span></h1>
+                <span class="badge">MySQL Connected</span>
+            </div>
+            <div class="db-status-pill" id="dbStatusPill">
+                <span class="dot"></span>
+                <span id="dbStatusText">Checking DB...</span>
+            </div>
+        </header>
+
+        <!-- Main Grid Layout -->
+        <main class="dashboard-grid">
+            
+            <!-- Left Card: Create Resume -->
+            <section class="card">
+                <div class="card-header">
+                    <h2>📝 Create Resume</h2>
+                    <p>Enter candidate details to store directly in MySQL database</p>
+                </div>
+                <form id="resumeForm" class="form-container">
+                    <div class="input-row">
+                        <div class="form-group">
+                            <label for="name">Full Name *</label>
+                            <input type="text" id="name" placeholder="e.g. Alex Johnson" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address *</label>
+                            <input type="email" id="email" placeholder="alex@example.com" required>
+                        </div>
+                    </div>
+
+                    <div class="input-row">
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" placeholder="+1 234 567 8900">
+                        </div>
+                        <div class="form-group">
+                            <label for="skills">Skills (comma separated) *</label>
+                            <input type="text" id="skills" placeholder="Python, FastAPI, SQL, React, Docker" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="education">Education</label>
+                        <input type="text" id="education" placeholder="B.S. in Computer Science">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="experience">Experience</label>
+                        <textarea id="experience" rows="3" placeholder="3 years building scalable backend microservices and REST APIs..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="summary">Professional Summary</label>
+                        <textarea id="summary" rows="2" placeholder="Passionate developer experienced in full stack development..."></textarea>
+                    </div>
+
+                    <button type="submit" id="saveResumeBtn" class="btn btn-primary">
+                        💾 Save Resume to MySQL
+                    </button>
+                    <div id="resumeMessage" class="alert-box"></div>
+                </form>
+            </section>
+
+            <!-- Right Card: AI Resume Analyzer -->
+            <section class="card">
+                <div class="card-header">
+                    <h2>⚡ Resume vs JD Analyzer</h2>
+                    <p>Compare resume with Job Description to compute match score & suggestions</p>
+                </div>
+                <div class="form-container">
+                    <div class="form-group">
+                        <label for="analyzerResume">Resume Text / Skills *</label>
+                        <textarea id="analyzerResume" rows="4" placeholder="Paste full resume text or list of skills (e.g. Python, SQL, Docker, FastAPI)..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="analyzerJd">Job Description (JD) *</label>
+                        <textarea id="analyzerJd" rows="4" placeholder="Paste job description (e.g. Looking for Backend Engineer proficient in Python, SQL, React, AWS, Docker)..."></textarea>
+                    </div>
+
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="saveAnalysisDb" checked>
+                        <label for="saveAnalysisDb">Save analysis to MySQL table (<code>resume_analyzer</code>)</label>
+                    </div>
+
+                    <button type="button" id="analyzeBtn" class="btn btn-secondary">
+                        🔍 Analyze Match
+                    </button>
+
+                    <!-- Analysis Results Area -->
+                    <div id="analysisResult" class="results-container">
+                        <div class="score-banner">
+                            <div class="score-dial">
+                                <span id="scoreValue">0%</span>
+                                <small>Match Score</small>
+                            </div>
+                            <div class="score-meta">
+                                <h3>Match Analysis</h3>
+                                <p id="scoreAnalysisSummary">Run an analysis to see insights</p>
+                            </div>
+                        </div>
+
+                        <div class="skills-split">
+                            <div class="skill-category">
+                                <h4>✅ Matched Skills</h4>
+                                <div id="matchedSkillsList" class="tags-container"></div>
+                            </div>
+                            <div class="skill-category">
+                                <h4>⚠️ Missing / Unmatched Skills</h4>
+                                <div id="missingSkillsList" class="tags-container"></div>
+                            </div>
+                        </div>
+
+                        <div class="suggestions-box">
+                            <h4>💡 Key Suggestions</h4>
+                            <ul id="suggestionsList"></ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Stored Resumes Table -->
+        <section class="card full-width">
+            <div class="card-header flex-between">
+                <div>
+                    <h2>📚 Stored Resumes in MySQL</h2>
+                    <p>Live records queried from <code>resumes</code> table in database</p>
+                </div>
+                <button id="refreshResumesBtn" class="btn btn-outline">🔄 Refresh</button>
+            </div>
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Skills</th>
+                            <th>Created At</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resumesTableBody">
+                        <tr><td colspan="6" class="text-center">Loading resumes...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

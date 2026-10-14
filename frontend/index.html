@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head> 
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>JobNex - AI Resume Analyzer</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <main class="container">
+            <h1>Welcome to JobNex</h1>
+            <p>Get ready to see how well your resume fits the target job description.</p> 
+            <form id="analyze-form">
+                <label for="resume">Resume / Skills</label>
+                <textarea 
+                    id="resume"
+                    placeholder="Paste your resume text or skills here..."
+                    required></textarea>
+
+                <label for="job-description">Job Description</label>
+                <textarea 
+                    id="job-description"
+                    placeholder="Paste target job description here..."
+                    required></textarea>
+
+                <button type="submit" id="analyze-button">Analyze Resume</button>
+            </form>
+
+            <p id="status" role="status"></p>
+            <section id="results" hidden>
+                <h2>Analysis Results</h2>
+                <pre id="result-data"></pre>
+            </section>
+        </main>
+        <script src="script.js"></script>
+    </body>
+</html>
